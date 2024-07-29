@@ -24,29 +24,40 @@ import {
 } from "@/components/ui/table";
 import { EmployeePagination } from "@/types/database";
 
-type ReducerState = EmployeePagination & { is_fetching: boolean };
+type ReducerState = EmployeePagination & {
+  is_fetching: boolean;
+  search_input: string;
+};
 
 export enum REDUCER_ACTION_TYPE {
   NEXT_PAGE,
-  START_FETCHING,
+  SEARCH,
+  SEARCH_INPUT,
+  FETCH,
 }
 
 type ReducerAction = {
   [K in REDUCER_ACTION_TYPE]: K extends REDUCER_ACTION_TYPE.NEXT_PAGE
-    ? { type: K; nextData: EmployeePagination }
-    : { type: K };
+    ? { type: K; nextPage: ReducerState }
+    : K extends REDUCER_ACTION_TYPE.SEARCH
+      ? { type: K; search: ReducerState }
+      : { type: K };
 }[REDUCER_ACTION_TYPE];
 
 function reducer(state: ReducerState, action: ReducerAction): ReducerState {
   switch (action.type) {
     case REDUCER_ACTION_TYPE.NEXT_PAGE:
       return {
-        ...action.nextData,
-        data: state.data.concat(action.nextData.data),
-        is_fetching: false,
+        ...action.nextPage,
+        data: state.data.concat(action.nextPage.data),
       };
 
-    case REDUCER_ACTION_TYPE.START_FETCHING:
+    case REDUCER_ACTION_TYPE.SEARCH:
+      return {
+        ...action.search,
+      };
+
+    case REDUCER_ACTION_TYPE.FETCH:
       return {
         ...state,
         is_fetching: true,
@@ -58,17 +69,19 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
 }
 
 export default function Home() {
-  const employeePagination = useLoaderData() as EmployeePagination;
+  const { data: employeePagination, search } = useLoaderData() as {
+    data: EmployeePagination;
+    search: string;
+  };
 
   const [state, dispatch] = useReducer(reducer, {
     ...employeePagination,
     is_fetching: false,
+    search_input: search,
   });
   const ref = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
-    console.log(state.is_fetching);
-
     if (
       !ref.current ||
       state.current_page === state.last_page ||
@@ -80,20 +93,30 @@ export default function Home() {
       async (entries) => {
         if (!entries[0].isIntersecting) return;
 
-        dispatch({ type: REDUCER_ACTION_TYPE.START_FETCHING });
+        dispatch({ type: REDUCER_ACTION_TYPE.FETCH });
 
-        const res = await fetch(state.next_page_url);
+        const searchParams = new URLSearchParams({
+          search: state.search_input,
+        });
+        const res = await fetch(state.next_page_url + "&" + searchParams);
 
         if (!res.ok) {
           throw new Response("", {
             status: 500,
-            statusText: "Failed to fetch employees",
+            statusText: "Failed to fetch new page of employees",
           });
         }
 
         const data: EmployeePagination = await res.json();
 
-        dispatch({ type: REDUCER_ACTION_TYPE.NEXT_PAGE, nextData: data });
+        dispatch({
+          type: REDUCER_ACTION_TYPE.NEXT_PAGE,
+          nextPage: {
+            ...data,
+            is_fetching: false,
+            search_input: state.search_input,
+          },
+        });
       },
       {
         rootMargin: "20px",
@@ -110,18 +133,53 @@ export default function Home() {
     state.is_fetching,
     state.last_page,
     state.next_page_url,
+    state.search_input,
   ]);
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0">
-      <div className="relative flex-1 md:grow-0">
+      <form className="relative flex-1 md:grow-0" role="search">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
           placeholder="Search..."
           className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+          defaultValue={search}
+          name="search"
+          onChange={async (e) => {
+            // replace every character except letters, numbers
+            const searchedValue = e.currentTarget.value.replaceAll(
+              /[^a-zA-Z0-9]/g,
+              "",
+            );
+
+            dispatch({ type: REDUCER_ACTION_TYPE.FETCH });
+
+            const searchParams = new URLSearchParams({ search: searchedValue });
+            const res = await fetch(
+              "http://localhost:8000/api/employees?" + searchParams,
+            );
+
+            if (!res.ok) {
+              throw new Response("", {
+                status: 500,
+                statusText: "Failed to fetch searched employees",
+              });
+            }
+
+            const data: EmployeePagination = await res.json();
+
+            dispatch({
+              type: REDUCER_ACTION_TYPE.SEARCH,
+              search: {
+                ...data,
+                is_fetching: false,
+                search_input: searchedValue,
+              },
+            });
+          }}
         />
-      </div>
+      </form>
       <Card x-chunk="dashboard-06-chunk-0" className="overflow-x-scroll">
         <CardHeader>
           <CardTitle>Employees</CardTitle>
@@ -200,11 +258,8 @@ export default function Home() {
         </CardContent>
         <CardFooter>
           <div className="text-xs text-muted-foreground">
-            Showing{" "}
-            <strong>
-              {state.from}-{state.to}
-            </strong>{" "}
-            of <strong>{state.total}</strong> products
+            Showing <strong>{state.total}</strong> product
+            {state.total !== 1 ? "s" : ""}
           </div>
         </CardFooter>
       </Card>

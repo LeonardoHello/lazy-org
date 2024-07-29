@@ -1,5 +1,10 @@
-export default async function loader() {
-  const res = await fetch("http://localhost:8000/api/employees");
+export default async function loader({ request }: { request: Request }) {
+  const url = new URL(request.url);
+  const searchParams = url.searchParams;
+
+  const res = await fetch(
+    "http://localhost:8000/api/employees?" + searchParams,
+  );
 
   if (!res.ok) {
     throw new Response("", {
@@ -8,5 +13,6 @@ export default async function loader() {
     });
   }
 
-  return res.json();
+  const data = await res.json();
+  return { data, search: searchParams.get("search") ?? "" };
 }
