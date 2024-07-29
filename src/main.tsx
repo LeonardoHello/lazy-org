@@ -1,7 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Link, RouterProvider, createBrowserRouter } from "react-router-dom";
 
+import Chart from "./components/routes/chart";
 import Home from "./components/routes/home";
 import homeLoader from "./components/routes/home/loader";
 import Root from "./components/routes/root";
@@ -13,11 +14,21 @@ const router = createBrowserRouter([
     path: "/",
     element: <Root />,
     errorElement: <RootError />,
+    handle: {
+      crumb: () => <Link to="/">Home</Link>,
+    },
     children: [
       {
         index: true,
         element: <Home />,
         loader: homeLoader,
+      },
+      {
+        path: "/chart",
+        element: <Chart />,
+        handle: {
+          crumb: () => <span>Chart</span>,
+        },
       },
     ],
   },

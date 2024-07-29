@@ -1,7 +1,16 @@
-import { NavLink } from "react-router-dom";
+import { Fragment } from "react";
+import { NavLink, useMatches } from "react-router-dom";
 
-import { Home, Network, PanelLeft } from "lucide-react";
+import { Home, Network, PanelLeft, Slash } from "lucide-react";
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./breadcrumb";
 import Logo from "./logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +23,13 @@ import {
 } from "@/components/ui/sheet";
 
 export function Header() {
+  const matches = useMatches();
+  const crumbs = matches
+    // @ts-expect-error type error
+    .filter((match) => Boolean(match.handle?.crumb))
+    // @ts-expect-error type error
+    .map((match) => match.handle.crumb(match.data));
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
@@ -46,6 +62,32 @@ export function Header() {
           </nav>
         </SheetContent>
       </Sheet>
+
+      <Breadcrumb className="flex sm:hidden">
+        <BreadcrumbList>
+          {crumbs.map((crumb, index, array) => {
+            const lastItem = index + 1 === array.length;
+
+            if (lastItem)
+              return (
+                <BreadcrumbItem key={index}>
+                  <BreadcrumbPage>{crumb}</BreadcrumbPage>
+                </BreadcrumbItem>
+              );
+
+            return (
+              <Fragment key={index}>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>{crumb}</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator>
+                  <Slash />
+                </BreadcrumbSeparator>
+              </Fragment>
+            );
+          })}
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="ml-auto">
         <Logo />
       </div>

@@ -67,6 +67,12 @@
     @apply dark bg-background font-inter text-foreground;
   }
 }
+
+/* By default, an active class is added to a <NavLink> component when it is active */
+.active {
+  @apply bg-accent text-accent-foreground;
+}
+
 ::-webkit-scrollbar {
   @apply h-1 w-1;
 }
