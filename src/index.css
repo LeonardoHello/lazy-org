@@ -67,3 +67,14 @@
     @apply dark bg-background font-inter text-foreground;
   }
 }
+::-webkit-scrollbar {
+  @apply h-1 w-1;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-foreground;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-foreground;
+}
