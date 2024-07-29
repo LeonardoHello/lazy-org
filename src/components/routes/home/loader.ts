@@ -14,5 +14,5 @@ export default async function loader({ request }: { request: Request }) {
   }
 
   const data = await res.json();
-  return { data, search: searchParams.get("search") ?? "" };
+  return { data, initialSearchInput: searchParams.get("search") ?? "" };
 }

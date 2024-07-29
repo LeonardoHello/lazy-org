@@ -3,6 +3,7 @@ import { NavLink, useMatches } from "react-router-dom";
 
 import { Home, Network, PanelLeft, Slash } from "lucide-react";
 
+import Logo from "./logo";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,8 +11,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "./breadcrumb";
-import Logo from "./logo";
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,

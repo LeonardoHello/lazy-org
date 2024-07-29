@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 
-import { Aside } from "../../ui/aside";
-import { Header } from "../../ui/header";
+import { Aside } from "@/components/aside";
+import { Header } from "@/components/header";
 
 export default function Root() {
   return (
