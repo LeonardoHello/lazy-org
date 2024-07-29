@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 
 import { Search } from "lucide-react";
@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -23,11 +24,93 @@ import {
 } from "@/components/ui/table";
 import { EmployeePagination } from "@/types/database";
 
+type ReducerState = EmployeePagination & { is_fetching: boolean };
+
+export enum REDUCER_ACTION_TYPE {
+  NEXT_PAGE,
+  START_FETCHING,
+}
+
+type ReducerAction = {
+  [K in REDUCER_ACTION_TYPE]: K extends REDUCER_ACTION_TYPE.NEXT_PAGE
+    ? { type: K; nextData: EmployeePagination }
+    : { type: K };
+}[REDUCER_ACTION_TYPE];
+
+function reducer(state: ReducerState, action: ReducerAction): ReducerState {
+  switch (action.type) {
+    case REDUCER_ACTION_TYPE.NEXT_PAGE:
+      return {
+        ...action.nextData,
+        data: state.data.concat(action.nextData.data),
+        is_fetching: false,
+      };
+
+    case REDUCER_ACTION_TYPE.START_FETCHING:
+      return {
+        ...state,
+        is_fetching: true,
+      };
+
+    default:
+      throw Error("Unknown action.");
+  }
+}
+
 export default function Home() {
-  // I don't like this solution either
   const employeePagination = useLoaderData() as EmployeePagination;
 
-  const [employees] = useState(employeePagination.data);
+  const [state, dispatch] = useReducer(reducer, {
+    ...employeePagination,
+    is_fetching: false,
+  });
+  const ref = useRef<HTMLTableRowElement>(null);
+
+  useEffect(() => {
+    console.log(state.is_fetching);
+
+    if (
+      !ref.current ||
+      state.current_page === state.last_page ||
+      state.is_fetching
+    )
+      return;
+
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (!entries[0].isIntersecting) return;
+
+        dispatch({ type: REDUCER_ACTION_TYPE.START_FETCHING });
+
+        const res = await fetch(state.next_page_url);
+
+        if (!res.ok) {
+          throw new Response("", {
+            status: 500,
+            statusText: "Failed to fetch employees",
+          });
+        }
+
+        const data: EmployeePagination = await res.json();
+
+        dispatch({ type: REDUCER_ACTION_TYPE.NEXT_PAGE, nextData: data });
+      },
+      {
+        rootMargin: "20px",
+      },
+    );
+
+    observer.observe(ref.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [
+    state.current_page,
+    state.is_fetching,
+    state.last_page,
+    state.next_page_url,
+  ]);
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0">
@@ -64,8 +147,11 @@ export default function Home() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {employees.map((employe) => (
-                <TableRow key={employe.id}>
+              {state.data.map((employe, index, array) => (
+                <TableRow
+                  key={employe.id}
+                  ref={index + 1 === array.length ? ref : undefined}
+                >
                   <TableCell className="hidden sm:table-cell">
                     <Avatar>
                       <AvatarImage
@@ -90,6 +176,25 @@ export default function Home() {
                   </TableCell>
                 </TableRow>
               ))}
+              {state.is_fetching && (
+                <TableRow>
+                  <TableCell className="hidden sm:table-cell">
+                    <Skeleton className="aspect-square size-10 rounded-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-2 w-12" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-2 w-16" />
+                  </TableCell>
+                  <TableCell className="rotate-180 lg:rotate-0">
+                    <Skeleton className="h-2 w-40" />
+                  </TableCell>
+                  <TableCell className="hidden rotate-180 lg:table-cell">
+                    <Skeleton className="h-2 w-64" />
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -97,9 +202,9 @@ export default function Home() {
           <div className="text-xs text-muted-foreground">
             Showing{" "}
             <strong>
-              {employeePagination.from}-{employeePagination.to}
+              {state.from}-{state.to}
             </strong>{" "}
-            of <strong>{employeePagination.total}</strong> products
+            of <strong>{state.total}</strong> products
           </div>
         </CardFooter>
       </Card>
