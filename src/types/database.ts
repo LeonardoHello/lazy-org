@@ -9,6 +9,8 @@ export type Employee = {
   manager_id: number | null;
   created_at: string;
   updated_at: string;
+  adress: string;
+  about: string;
 };
 
 export type EmployeePagination = {

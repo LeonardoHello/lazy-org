@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 
+import HomeTableDialog from "./homeTableDialog";
 import { ReducerState } from "./routes/home";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -10,6 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -53,34 +62,42 @@ export const HomeTable = forwardRef<
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((employe, index, array) => (
-              <TableRow
-                key={employe.id}
-                ref={index + 1 === array.length ? ref : undefined}
-              >
-                <TableCell className="hidden sm:table-cell">
-                  <Avatar>
-                    <AvatarImage
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="64"
-                      src={employe.imageUrl}
-                      width="64"
-                    />
-                    <AvatarFallback>AV</AvatarFallback>
-                  </Avatar>
-                </TableCell>
-                <TableCell className="font-medium">
-                  {employe.firstName}
-                </TableCell>
-                <TableCell>{employe.lastName}</TableCell>
-                <TableCell className="text-right lg:text-left">
-                  {employe.email}
-                </TableCell>
-                <TableCell className="hidden lg:table-cell lg:text-right">
-                  {employe.position}
-                </TableCell>
-              </TableRow>
+            {data.map((employee, index, array) => (
+              <Dialog key={employee.id}>
+                <DialogTrigger asChild>
+                  <TableRow ref={index + 1 === array.length ? ref : undefined}>
+                    <TableCell className="hidden sm:table-cell">
+                      <Avatar>
+                        <AvatarImage
+                          alt="Product image"
+                          className="aspect-square rounded-md object-cover"
+                          height="64"
+                          src={employee.imageUrl}
+                          width="64"
+                        />
+                        <AvatarFallback>AV</AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {employee.firstName}
+                    </TableCell>
+                    <TableCell>{employee.lastName}</TableCell>
+                    <TableCell className="text-right lg:text-left">
+                      {employee.email}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell lg:text-right">
+                      {employee.position}
+                    </TableCell>
+                  </TableRow>
+                </DialogTrigger>
+                <DialogContent className="max-h-[calc(100vh-2rem)] max-w-3xl overflow-y-scroll">
+                  <DialogHeader>
+                    <DialogTitle>Employee information</DialogTitle>
+                    <DialogDescription>Personal details.</DialogDescription>
+                  </DialogHeader>
+                  <HomeTableDialog employee={employee} />
+                </DialogContent>
+              </Dialog>
             ))}
             {is_fetching && (
               <TableRow>
