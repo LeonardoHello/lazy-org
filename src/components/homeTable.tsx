@@ -65,7 +65,10 @@ export const HomeTable = forwardRef<
             {data.map((employee, index, array) => (
               <Dialog key={employee.id}>
                 <DialogTrigger asChild>
-                  <TableRow ref={index + 1 === array.length ? ref : undefined}>
+                  <TableRow
+                    ref={index + 1 === array.length ? ref : undefined}
+                    className="cursor-pointer"
+                  >
                     <TableCell className="hidden sm:table-cell">
                       <Avatar>
                         <AvatarImage

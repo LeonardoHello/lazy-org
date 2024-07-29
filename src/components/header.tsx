@@ -4,6 +4,7 @@ import { NavLink, useMatches } from "react-router-dom";
 import { Home, Network, PanelLeft, Slash } from "lucide-react";
 
 import Logo from "./logo";
+import { ModeToggle } from "./mode-toggle";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,12 +40,12 @@ export function Header() {
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="sm:max-w-xs">
+        <SheetContent side="left" className="flex flex-col sm:max-w-xs">
           <SheetHeader>
             <SheetTitle>Menu</SheetTitle>
             <SheetDescription className="sr-only">Header Menu</SheetDescription>
           </SheetHeader>
-          <nav className="mt-4 grid gap-2 text-lg font-medium">
+          <nav className="grid gap-2 text-lg font-medium">
             <NavLink
               to="/"
               className="flex items-center gap-4 rounded px-2.5 py-2 text-muted-foreground hover:text-foreground"
@@ -60,6 +61,9 @@ export function Header() {
               Chart
             </NavLink>
           </nav>
+          <div className="mt-auto">
+            <ModeToggle />
+          </div>
         </SheetContent>
       </Sheet>
 
