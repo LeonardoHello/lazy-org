@@ -29,14 +29,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export const HomeTable = forwardRef<
+export const EmployeeTable = forwardRef<
   HTMLTableRowElement,
   {
     data: ReducerState["data"];
     is_loading: ReducerState["is_loading"];
     total: ReducerState["total"];
   }
->(function HomeTable({ data, is_loading, total }, ref) {
+>(function EmployeeTable({ data, is_loading, total }, ref) {
   return (
     <Card className="overflow-x-scroll">
       <CardHeader>

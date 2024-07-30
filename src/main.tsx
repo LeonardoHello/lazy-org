@@ -10,8 +10,9 @@ import Home from "./components/routes/home";
 import homeLoader from "./components/routes/home/loader";
 import Root from "./components/routes/root";
 import RootError from "./components/routes/root/error";
+import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "./components/ui/toaster";
 import "./index.css";
-import { ThemeProvider } from "@/components/theme-provider";
 
 axios.defaults.baseURL = "http://localhost:8000/api/employees";
 
@@ -45,6 +46,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <RouterProvider router={router} />
+      <Toaster />
     </ThemeProvider>
   </React.StrictMode>,
 );

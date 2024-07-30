@@ -1,10 +1,11 @@
 import { useEffect, useReducer, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
-import { HomeSearchInput } from "@/components/homeSearchInput";
-import { HomeTable } from "@/components/homeTable";
+import { EmployeeSearch } from "@/components/employeeSearch";
+import { EmployeeTable } from "@/components/employeeTable";
+import { useToast } from "@/components/ui/use-toast";
 import { EmployeePagination } from "@/types/database";
 
 export type ReducerState = EmployeePagination & {
@@ -64,6 +65,8 @@ export default function Home() {
     search_input: initialSearchInput,
   });
 
+  const { toast } = useToast();
+
   useEffect(() => {
     if (
       !ref.current ||
@@ -78,20 +81,37 @@ export default function Home() {
 
         startLoading();
 
-        const { data }: AxiosResponse<EmployeePagination> = await axios({
-          baseURL: undefined,
-          url: state.next_page_url,
-          params: { search: state.search_input },
-        });
+        try {
+          const { data }: AxiosResponse<EmployeePagination> = await axios({
+            baseURL: undefined,
+            url: state.next_page_url,
+            params: { search: state.search_input },
+          });
 
-        dispatch({
-          type: REDUCER_ACTION_TYPE.NEXT_PAGE,
-          nextPage: {
-            ...data,
-            is_loading: false,
-            search_input: state.search_input,
-          },
-        });
+          dispatch({
+            type: REDUCER_ACTION_TYPE.NEXT_PAGE,
+            nextPage: {
+              ...data,
+              is_loading: false,
+              search_input: state.search_input,
+            },
+          });
+        } catch (error) {
+          if (error instanceof AxiosError && error.response) {
+            toast({
+              variant: "destructive",
+              title: error.response.statusText,
+              description: error.response.data?.message,
+            });
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Failed to retrieve employees",
+              description:
+                "An error occurred while attempting to retrieve new page of employees from our servers",
+            });
+          }
+        }
       },
       {
         rootMargin: "10px",
@@ -109,6 +129,7 @@ export default function Home() {
     state.last_page,
     state.next_page_url,
     state.search_input,
+    toast,
   ]);
 
   function startLoading() {
@@ -134,12 +155,12 @@ export default function Home() {
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0">
-      <HomeSearchInput
+      <EmployeeSearch
         initialSearchInput={initialSearchInput}
         startLoading={startLoading}
         searchTable={searchTable}
       />
-      <HomeTable
+      <EmployeeTable
         ref={ref}
         data={state.data}
         is_loading={state.is_loading}
