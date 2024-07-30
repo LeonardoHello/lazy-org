@@ -1,3 +1,4 @@
+import axios, { AxiosResponse } from "axios";
 import { Search } from "lucide-react";
 
 import { ReducerState } from "./routes/home";
@@ -37,19 +38,9 @@ export function HomeSearchInput({
 
           startLoading();
 
-          const searchParams = new URLSearchParams({ search: searchedValue });
-          const res = await fetch(
-            "http://localhost:8000/api/employees?" + searchParams,
-          );
-
-          if (!res.ok) {
-            throw new Response("", {
-              status: 500,
-              statusText: "Failed to fetch searched employees",
-            });
-          }
-
-          const data: EmployeePagination = await res.json();
+          const { data }: AxiosResponse<EmployeePagination> = await axios({
+            params: { search: searchedValue },
+          });
 
           searchTable({ data, search_input: searchedValue });
         }}

@@ -1,6 +1,8 @@
 import { useEffect, useReducer, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 
+import axios, { AxiosResponse } from "axios";
+
 import { HomeSearchInput } from "@/components/homeSearchInput";
 import { HomeTable } from "@/components/homeTable";
 import { EmployeePagination } from "@/types/database";
@@ -76,19 +78,12 @@ export default function Home() {
 
         startLoading();
 
-        const searchParams = new URLSearchParams({
-          search: state.search_input,
+        const { data }: AxiosResponse<EmployeePagination> = await axios({
+          baseURL: undefined,
+          url: state.next_page_url,
+          params: { search: state.search_input },
+          method: "post",
         });
-        const res = await fetch(state.next_page_url + "&" + searchParams);
-
-        if (!res.ok) {
-          throw new Response("", {
-            status: 500,
-            statusText: "Failed to fetch new page of employees",
-          });
-        }
-
-        const data: EmployeePagination = await res.json();
 
         dispatch({
           type: REDUCER_ACTION_TYPE.NEXT_PAGE,
@@ -100,7 +95,7 @@ export default function Home() {
         });
       },
       {
-        rootMargin: "20px",
+        rootMargin: "10px",
       },
     );
 
