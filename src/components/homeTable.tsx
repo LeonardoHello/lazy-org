@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 
-import HomeTableDialog from "./homeTableDialog";
+import EmployeeDetails from "./employeeDetails";
 import { ReducerState } from "./routes/home";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -98,7 +98,7 @@ export const HomeTable = forwardRef<
                     <DialogTitle>Employee information</DialogTitle>
                     <DialogDescription>Personal details.</DialogDescription>
                   </DialogHeader>
-                  <HomeTableDialog employee={employee} />
+                  <EmployeeDetails employee={employee} />
                 </DialogContent>
               </Dialog>
             ))}

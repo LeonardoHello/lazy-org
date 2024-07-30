@@ -1,6 +1,6 @@
 import { Employee } from "@/types/database";
 
-export default function HomeTableDialog({ employee }: { employee: Employee }) {
+export default function EmployeeDetails({ employee }: { employee: Employee }) {
   return (
     <div className="mt-6 border-t border-border">
       <dl className="divide-y divide-border">
