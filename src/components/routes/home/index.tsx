@@ -82,7 +82,6 @@ export default function Home() {
           baseURL: undefined,
           url: state.next_page_url,
           params: { search: state.search_input },
-          method: "post",
         });
 
         dispatch({
