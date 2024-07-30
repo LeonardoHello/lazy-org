@@ -10,7 +10,7 @@ import { Employee, EmployeePagination } from "@/types/database";
 interface EmployeeTreeNode extends TreeNode {
   data: Pick<
     Employee,
-    "manager_id" | "firstName" | "lastName" | "position" | "imageUrl"
+    "id" | "manager_id" | "firstName" | "lastName" | "position" | "imageUrl"
   >;
   children: EmployeeTreeNode[];
 }
@@ -54,7 +54,7 @@ export function EmployeeChart({
     }
   });
 
-  const nodeTemplate = (node: TreeNode) => {
+  const nodeTemplate = (node: EmployeeTreeNode) => {
     return (
       <div className="flex flex-col">
         <div className="flex flex-col items-center gap-2">
