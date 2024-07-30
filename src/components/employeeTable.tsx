@@ -93,7 +93,7 @@ export const EmployeeTable = forwardRef<
                     </TableCell>
                   </TableRow>
                 </DialogTrigger>
-                <DialogContent className="max-h-[calc(100vh-2rem)] max-w-3xl overflow-y-scroll">
+                <DialogContent className="max-h-[calc(100vh-2rem)] max-w-[calc(100vw-4rem)] overflow-y-scroll">
                   <DialogHeader>
                     <DialogTitle>Employee information</DialogTitle>
                     <DialogDescription>Personal details.</DialogDescription>

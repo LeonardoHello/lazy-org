@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import { Link, RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import axios from "axios";
+import { PrimeReactProvider } from "primereact/api";
+import Tailwind from "primereact/passthrough/tailwind";
 
 import Chart from "./components/routes/chart";
 import chartLoader from "./components/routes/chart/loader";
@@ -45,8 +47,15 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
-      <Toaster />
+      <PrimeReactProvider
+        value={{
+          unstyled: true,
+          pt: Tailwind,
+        }}
+      >
+        <RouterProvider router={router} />
+        <Toaster />
+      </PrimeReactProvider>
     </ThemeProvider>
   </React.StrictMode>,
 );
