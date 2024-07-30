@@ -33,10 +33,10 @@ export const HomeTable = forwardRef<
   HTMLTableRowElement,
   {
     data: ReducerState["data"];
-    is_fetching: ReducerState["is_fetching"];
+    is_loading: ReducerState["is_loading"];
     total: ReducerState["total"];
   }
->(function HomeTable({ data, is_fetching, total }, ref) {
+>(function HomeTable({ data, is_loading, total }, ref) {
   return (
     <Card className="overflow-x-scroll">
       <CardHeader>
@@ -102,7 +102,7 @@ export const HomeTable = forwardRef<
                 </DialogContent>
               </Dialog>
             ))}
-            {is_fetching && (
+            {is_loading && (
               <TableRow>
                 <TableCell className="hidden sm:table-cell">
                   <Skeleton className="aspect-square size-10 rounded-full" />

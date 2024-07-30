@@ -8,7 +8,7 @@ import { HomeTable } from "@/components/homeTable";
 import { EmployeePagination } from "@/types/database";
 
 export type ReducerState = EmployeePagination & {
-  is_fetching: boolean;
+  is_loading: boolean;
   search_input: string;
 };
 
@@ -43,7 +43,7 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
     case REDUCER_ACTION_TYPE.FETCH:
       return {
         ...state,
-        is_fetching: true,
+        is_loading: true,
       };
 
     default:
@@ -60,7 +60,7 @@ export default function Home() {
   const ref = useRef<HTMLTableRowElement>(null);
   const [state, dispatch] = useReducer(reducer, {
     ...employeePagination,
-    is_fetching: false,
+    is_loading: false,
     search_input: initialSearchInput,
   });
 
@@ -68,7 +68,7 @@ export default function Home() {
     if (
       !ref.current ||
       state.current_page === state.last_page ||
-      state.is_fetching
+      state.is_loading
     )
       return;
 
@@ -88,7 +88,7 @@ export default function Home() {
           type: REDUCER_ACTION_TYPE.NEXT_PAGE,
           nextPage: {
             ...data,
-            is_fetching: false,
+            is_loading: false,
             search_input: state.search_input,
           },
         });
@@ -105,7 +105,7 @@ export default function Home() {
     };
   }, [
     state.current_page,
-    state.is_fetching,
+    state.is_loading,
     state.last_page,
     state.next_page_url,
     state.search_input,
@@ -126,7 +126,7 @@ export default function Home() {
       type: REDUCER_ACTION_TYPE.SEARCH,
       search: {
         ...data,
-        is_fetching: false,
+        is_loading: false,
         search_input,
       },
     });
@@ -142,7 +142,7 @@ export default function Home() {
       <HomeTable
         ref={ref}
         data={state.data}
-        is_fetching={state.is_fetching}
+        is_loading={state.is_loading}
         total={state.total}
       />
     </main>
