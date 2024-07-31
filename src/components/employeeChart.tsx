@@ -24,6 +24,7 @@ export function EmployeeChart({
     return res.data.data;
   });
 
+  // mutated the elements of the list to resemble primereacts TreeNode
   let list: EmployeeTreeNode[] = employeesArr.map(
     ({ id, manager_id, firstName, lastName, position, imageUrl }) => {
       return {
@@ -41,6 +42,8 @@ export function EmployeeChart({
     },
   );
 
+  // filled each TreeNode's children property with
+  // corresponding TreeNode that is matching it's id with manager_id
   list.forEach((elem: EmployeeTreeNode) => {
     const managerId = elem.data.manager_id;
     if (!managerId) return;

@@ -8,6 +8,9 @@ import EmployeeChartSkeleton from "@/components/employeeChartSkeleton";
 import { EmployeePagination } from "@/types/database";
 
 export default function Chart() {
+  // defered the value returned from loader function
+  // to display a skeleton placeholder because of longer fetch time
+  // (probabbly should have used TanStack Query for caching)
   const { resArr } = useLoaderData() as {
     resArr: Promise<AxiosResponse<EmployeePagination>[]>;
   };

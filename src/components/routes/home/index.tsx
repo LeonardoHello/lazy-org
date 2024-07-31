@@ -13,6 +13,7 @@ export type ReducerState = EmployeePagination & {
   search_input: string;
 };
 
+// enums representing useReducer action types
 enum REDUCER_ACTION_TYPE {
   NEXT_PAGE,
   SEARCH,
@@ -20,6 +21,8 @@ enum REDUCER_ACTION_TYPE {
   FETCH,
 }
 
+// iterating through REDUCER_ACTION_TYPE enum and
+// setting a type depending on it's value
 type ReducerAction = {
   [K in REDUCER_ACTION_TYPE]: K extends REDUCER_ACTION_TYPE.NEXT_PAGE
     ? { type: K; nextPage: ReducerState }
@@ -53,11 +56,13 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
 }
 
 export default function Home() {
+  // data returned from the loader function on initial page load
   const { data: employeePagination, initialSearchInput } = useLoaderData() as {
     data: EmployeePagination;
     initialSearchInput: string;
   };
 
+  // ref set to the last element of the table as an intersection observer
   const ref = useRef<HTMLTableRowElement>(null);
   const [state, dispatch] = useReducer(reducer, {
     ...employeePagination,

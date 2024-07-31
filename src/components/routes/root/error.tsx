@@ -5,6 +5,7 @@ import { AxiosError } from "axios";
 export default function Error() {
   const error = useRouteError();
 
+  // in case a response is thrown from an action or loader
   if (isRouteErrorResponse(error)) {
     return (
       <main className="grid min-h-screen place-items-center px-6 py-24 sm:py-32 lg:px-8">
@@ -45,6 +46,7 @@ export default function Error() {
     );
   }
 
+  // default error response
   return (
     <main className="grid min-h-screen place-items-center px-6 py-24 sm:py-32 lg:px-8">
       <div className="text-center">

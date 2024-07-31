@@ -26,8 +26,14 @@ import {
 export function Header() {
   const matches = useMatches();
   const crumbs = matches
+    // first get rid of any matches that don't have handle and crumb
+    // which were set in createBrowserRouter
+
     // @ts-expect-error type error
-    .filter((match) => Boolean(match.handle?.crumb))
+    .filter((match) => Boolean(match.handle.crumb))
+    // now map them into an array of elements, passing the loader
+    // data to each one
+
     // @ts-expect-error type error
     .map((match) => match.handle.crumb(match.data));
 
